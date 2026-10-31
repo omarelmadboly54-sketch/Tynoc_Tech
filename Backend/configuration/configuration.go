@@ -9,7 +9,7 @@ import (
 )
 
 func InitPostgres() (*gorm.DB,models.Configuration,error){
-	config,err:=utils.LoadConfiguration(".")
+	config,err:=utils.LoadConfiguration("./Backend")
 	if err!=nil{
 		return nil,models.Configuration{},err
 	}
@@ -18,6 +18,6 @@ func InitPostgres() (*gorm.DB,models.Configuration,error){
 		return nil,models.Configuration{},err
 	}
 
-	return db,models.Configuration{},nil
+	return db,config,nil
 }
 
