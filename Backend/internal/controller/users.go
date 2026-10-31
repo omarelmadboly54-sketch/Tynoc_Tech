@@ -27,10 +27,11 @@ func NewUserController(UserService service.UserService)UserController{
 
 func(ctl *userController)RegisterRouter(g *gin.RouterGroup){
 	g.POST("/users",ctl.CreateUser)
+	g.POST("/login",ctl.Login)
 }
 
 func(ctl *userController)CreateUser(g *gin.Context){
-	var req presenters.CreateUserReq
+	 req:=presenters.CreateUserReq{}
 
 	if err:=g.ShouldBindJSON(&req);err!=nil{
 		g.JSON(http.StatusBadRequest,gin.H{"error":err.Error(),
@@ -38,7 +39,9 @@ func(ctl *userController)CreateUser(g *gin.Context){
 	return
 	}
 	
-	err:=ctl.UserService.CreateUser(&req)
+	toUser:=req.ToUser()
+	
+	err:=ctl.UserService.CreateUser(&toUser)
 	if err!=nil{
 		if errors.Is(err,apperrors.ErrUserAlreadyExists){
 			g.JSON(http.StatusBadRequest,gin.H{"error":apperrors.ErrUserAlreadyExists.Error(),
@@ -54,4 +57,28 @@ func(ctl *userController)CreateUser(g *gin.Context){
 		"ok":"ok",
 	})
 
+}
+
+func(ctl *userController)Login(g *gin.Context){
+	var req presenters.LoginReq
+	
+	if err:=g.ShouldBindJSON(&req);err!=nil{
+		g.JSON(http.StatusBadRequest,gin.H{"error":err.Error(),
+	})
+	return
+	}
+	accessToken,err:=ctl.UserService.Login(req.Email,req.Password)
+	if err!=nil{
+		if errors.Is(err,apperrors.ErrInvalidCredentials){
+			g.JSON(http.StatusUnauthorized,gin.H{"error":apperrors.ErrInvalidCredentials.Error(),
+		})
+		return
+		}
+		g.JSON(http.StatusInternalServerError,gin.H{"error":err.Error(),
+	})
+	return
+	}
+	g.JSON(http.StatusOK,gin.H{
+		"access_token":accessToken,
+	})
 }

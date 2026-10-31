@@ -2,8 +2,9 @@ package models
 
 
 type Configuration struct{
-	DBDriver		string			`mapstructure:"DB_DRIVER"`
-	DBSource		string			`mapstructure:"DB_SOURCE"`
-	ServerAddress	string			`mapstructure:"SERVER_ADDRESS"`			
-
+	DBDriver				string			`mapstructure:"DB_DRIVER"`
+	DBSource				string			`mapstructure:"DB_SOURCE"`
+	ServerAddress			string			`mapstructure:"SERVER_ADDRESS"`
+	SecretKey				string			`mapstructure:"SECRET_KEY"`
+	Access_Token_Minutes	int				`mapstructure:"ACCESS_TOKEN_MINUTES"`			
 }
