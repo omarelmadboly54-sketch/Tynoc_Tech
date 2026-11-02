@@ -21,10 +21,15 @@ func(r *userRepository)CreateUser(user *models.User)error{
 	return r.db.Create(user).Error
 }
 
-func(r *userRepository)GetUserByEmail(email string)(user *models.User,err error){
+func(r *userRepository)GetUserByEmail(email string)(*models.User,error){
+	var user models.User
 	result:=r.db.Where("email=?",email).First(&user)
 	if result.Error!=nil{
 		return nil,result.Error
 	}
-	return user,nil
+	return &user,nil
 }
+
+
+
+

@@ -25,6 +25,7 @@ type UserService interface{
 	Login(email,password string)(string,error)
 }
 
+
 func NewUserService(userRepository repository.UserRepository,tokenMaker tokens.Maker,tokenDuration time.Duration)UserService{
 	return &userService{
 		UserRepository:userRepository ,
