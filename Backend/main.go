@@ -34,8 +34,17 @@ func main() {
 	userController:=controller.NewUserController(userService)
 	userController.RegisterRouter(r.Group("/api"))
 
+	//forms:
+	formRepository:=postgres.NewFormRepository(db)
+	formService:=service.NewFormService(formRepository)
+	formController:=controller.NewFormController(formService,tokenMaker)
+	formController.RegisterRoutes(r.Group("/api"))
 
-
+	//questions:
+	questionRepository:=postgres.NewQuestionRepository(db)
+	questionService:=service.NewQuestionService(questionRepository,formRepository)
+	questionController:=controller.NewQuestionController(questionService,tokenMaker)
+	questionController.RegisterRutes(r.Group("/api"))
 
 	if err:=r.Run(config.ServerAddress);err!=nil{
 		log.Fatalf("Failed To Load Server:%v",err)

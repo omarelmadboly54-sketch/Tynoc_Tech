@@ -31,8 +31,8 @@ func(maker *JWTMaker)CreateToken(email string,user_id int64,duration time.Durati
 	jwt.MapClaims{
 		"email":Payload.Email,
 		"user_id":Payload.UserID,
-		"issued_at":Payload.IssuedAt.Unix(),
-		"expired_at":Payload.ExpiredAt.Unix(),
+		"iat":Payload.IssuedAt.Unix(),
+		"exp":Payload.ExpiredAt.Unix(),
 	})
 	return jwtToken.SignedString([]byte(maker.secretKey))
 
