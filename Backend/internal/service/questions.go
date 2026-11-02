@@ -17,6 +17,7 @@ type questionService struct {
 type QuestionService interface{
 	CreateQuestion(question *models.Question,id int64,user_id int64)error
 	GetAll(form_id int64,user_id int64)([]models.Question,error)
+	DeleteQuestion(id int64,form_id int64,user_id int64)error
 
 }
 
@@ -69,4 +70,25 @@ func(s *questionService)GetAll(form_id int64,user_id int64)([]models.Question,er
 	return questions,nil
 }
 
+
+func(s *questionService)DeleteQuestion(id int64,form_id int64,user_id int64)error{
+	form,err:=s.FormRepository.GetFormByUserID(form_id,user_id)
+
+	if err!=nil{
+		if errors.Is(err,gorm.ErrRecordNotFound){
+			return apperrors.ErrFormNotFound
+		}
+		return err
+	}
+
+	err=s.QuestionRepository.DeleteQuestion(id,form.ID)
+	if err!=nil{
+		if errors.Is(err,gorm.ErrRecordNotFound){
+			return apperrors.ErrQuestionNotFound
+		}
+		return err
+	}
+
+	return nil
+}
 

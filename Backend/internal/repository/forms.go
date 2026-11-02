@@ -9,5 +9,7 @@ type FormRepository interface {
 	GetFormByUserID(id int64,user_id int64)(*models.Form,error)
 	GetFormsByUserID(user_id int64)([]models.Form,error)
 	DeleteFormByID(id int64,user_id int64)error
+	UpdateFormStatus(form_id int64,user_id int64,is_public bool)error
 }
+
 

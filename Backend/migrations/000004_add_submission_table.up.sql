@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS submissions(
+    id BIGSERIAL PRIMARY KEY,
+    form_id BIGINT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Foreign Key (form_id) REFERENCES forms(id) ON DELETE CASCADE
+);
+

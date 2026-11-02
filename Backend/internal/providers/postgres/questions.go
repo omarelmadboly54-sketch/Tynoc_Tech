@@ -33,3 +33,17 @@ func(r *questionRepository)GetAll(form_id int64)([]models.Question,error){
 	return questions,nil
 
 }
+
+
+func(r *questionRepository)DeleteQuestion(id int64,form_id int64)error{
+	result:= r.db.Where("id=? AND form_id=?",id,form_id).Delete(&models.Question{})
+	if result.Error!=nil{
+		return result.Error
+	}
+
+	if result.RowsAffected==0{
+		return gorm.ErrRecordNotFound
+	}
+	return nil
+}
+

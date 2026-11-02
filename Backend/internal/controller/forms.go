@@ -7,6 +7,7 @@ import (
 	"tynoc_tech/Backend/internal/apperrors"
 	"tynoc_tech/Backend/internal/presenters"
 	"tynoc_tech/Backend/internal/service"
+	"tynoc_tech/Backend/internal/utils"
 	"tynoc_tech/Backend/middleware"
 	"tynoc_tech/Backend/tokens"
 
@@ -34,6 +35,7 @@ func(ctl *formController)RegisterRoutes(g *gin.RouterGroup){
 	g.GET("/forms/me",middleware.AuthMiddleware(ctl.tokenMaker),ctl.GetFormsByUserID)
 	g.GET("/forms/me/:id",middleware.AuthMiddleware(ctl.tokenMaker),ctl.GetFormByUserID)
 	g.DELETE("/forms/:id",middleware.AuthMiddleware(ctl.tokenMaker),ctl.DeleteFormByID)
+	g.PATCH("/forms/:id",middleware.AuthMiddleware(ctl.tokenMaker),ctl.UpdateFormStatus)
 	g.GET("/forms/:id",ctl.GetFormByID)
 	g.GET("/forms",ctl.GetAll)
 
@@ -75,7 +77,7 @@ func(ctl *formController)GetFormByID(g *gin.Context){
 	})
 	return
 	}
-	form,err:=ctl.FormService.GetFormByID(id)
+	form,questions,err:=ctl.FormService.GetFormByID(id)
 	if err!=nil{
 		if errors.Is(err,apperrors.ErrFormNotFound){
 			g.JSON(http.StatusNotFound,gin.H{"error":apperrors.ErrFormNotFound.Error(),
@@ -87,8 +89,10 @@ func(ctl *formController)GetFormByID(g *gin.Context){
 	return
 	}
 
+	response:=utils.NewFormResponse(form,questions)
+
 	g.JSON(http.StatusOK,gin.H{
-		"form":form,
+		"form":response,
 	})
 }
 
@@ -122,7 +126,7 @@ func(ctl *formController)GetFormByUserID(g*gin.Context){
 
 	userID:=payload.UserID
 	
-	form,err:=ctl.FormService.GetFormByUserID(id,userID)
+	form,questions,err:=ctl.FormService.GetFormByUserID(id,userID)
 	if err!=nil{
 		if errors.Is(err,apperrors.ErrFormNotFound){
 			g.JSON(http.StatusNotFound,gin.H{"error":apperrors.ErrFormNotFound.Error(),
@@ -134,8 +138,10 @@ func(ctl *formController)GetFormByUserID(g*gin.Context){
 	return
 	}
 
+	response:=utils.NewOwnerFormResponse(form,questions)
+
 	g.JSON(http.StatusOK,gin.H{
-		"form":form,
+		"form":response,
 	})
 
 }
@@ -191,3 +197,44 @@ func(ctl *formController)DeleteFormByID(g *gin.Context){
 		"message":"form deleted successfully",
 	})
 }
+
+
+func(ctl *formController)UpdateFormStatus(g *gin.Context){
+	form_id,err:=strconv.ParseInt(g.Param("id"),10,64)
+	if err!=nil{
+		g.JSON(http.StatusBadRequest,gin.H{"error":err.Error(),
+	})
+	return
+	}
+	payload,ok:=middleware.GetTokenPayload(g)
+	if !ok{
+		g.JSON(http.StatusUnauthorized,gin.H{"error":"unauthorized request"})
+		return
+	}
+	userID:=payload.UserID
+	
+	var req presenters.UpdateFormStatus
+
+	if err:=g.ShouldBindJSON(&req);err!=nil{
+		g.JSON(http.StatusBadRequest,gin.H{"error":err.Error(),
+	})
+	return
+	}
+	
+	err=ctl.FormService.UpdateFormStatus(form_id,userID,*req.IsPublic)
+	if err!=nil{
+		if errors.Is(err,apperrors.ErrFormNotFound){
+			g.JSON(http.StatusNotFound,gin.H{"error":apperrors.ErrFormNotFound.Error(),
+		})
+		return
+		}
+		g.JSON(http.StatusInternalServerError,gin.H{"error":err.Error(),
+	})
+	return
+	}
+
+	g.JSON(http.StatusOK,gin.H{
+		"Message":"Status Updated Successfully",
+	})
+}
+
