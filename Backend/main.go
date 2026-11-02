@@ -33,15 +33,17 @@ func main() {
 	userService:=service.NewUserService(userRepository,tokenMaker,tokenDuration)
 	userController:=controller.NewUserController(userService)
 	userController.RegisterRouter(r.Group("/api"))
+	
+	//questions repository:
+	questionRepository:=postgres.NewQuestionRepository(db)
 
 	//forms:
 	formRepository:=postgres.NewFormRepository(db)
-	formService:=service.NewFormService(formRepository)
+	formService:=service.NewFormService(formRepository,questionRepository)
 	formController:=controller.NewFormController(formService,tokenMaker)
 	formController.RegisterRoutes(r.Group("/api"))
 
 	//questions:
-	questionRepository:=postgres.NewQuestionRepository(db)
 	questionService:=service.NewQuestionService(questionRepository,formRepository)
 	questionController:=controller.NewQuestionController(questionService,tokenMaker)
 	questionController.RegisterRutes(r.Group("/api"))

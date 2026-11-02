@@ -65,3 +65,21 @@ func(r *formRepository)GetFormsByUserID(user_id int64)([]models.Form,error){
 func(r *formRepository)DeleteFormByID(id int64,user_id int64)error{
 	return r.db.Where("id=? AND created_by=?",id,user_id).Delete(&models.Form{}).Error
 }
+
+
+func(r *formRepository)UpdateFormStatus(form_id int64,user_id int64,is_public bool)error{
+	var form models.Form
+	
+	result:=r.db.Model(&form).Where("id=? AND created_by=?",form_id,user_id).Update("is_public",is_public)
+
+	if result.Error!=nil{
+		return result.Error
+	}
+
+	if result.RowsAffected==0{
+		return gorm.ErrRecordNotFound
+	}
+	return nil
+	
+}
+

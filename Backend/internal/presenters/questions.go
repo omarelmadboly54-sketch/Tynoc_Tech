@@ -14,6 +14,14 @@ type CreateQuestionReq struct {
 	IsRequired	        bool				`json:"is_required"`	
 }
 
+type QuestionResponse struct {
+    ID           int64          `json:"id"`
+    QuestionText string         `json:"question_text"`
+    QuestionType string         `json:"question_type"`
+    Options      datatypes.JSON `json:"options"`
+    Position     int            `json:"position"`
+    IsRequired   bool           `json:"is_required"`
+}
 
 func(c *CreateQuestionReq)ToQuestion()models.Question{
 	return models.Question{
