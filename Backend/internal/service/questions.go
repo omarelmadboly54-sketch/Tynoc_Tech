@@ -11,50 +11,43 @@ import (
 
 type questionService struct {
 	QuestionRepository repository.QuestionRepository
-	FormRepository     repository.FormRepository
+	FormService     FormService
 }
 
 type QuestionService interface{
-	CreateQuestion(question *models.Question,id int64,user_id int64)error
+	CreateQuestion(question *models.Question,FormID int64,user_id int64)error
 	GetAll(form_id int64,user_id int64)([]models.Question,error)
+	GetQuestionsByFormID(formID int64) ([]models.Question, error)
 	DeleteQuestion(id int64,form_id int64,user_id int64)error
-
 }
 
-func NewQuestionService(Questionrepository repository.QuestionRepository,FormRepository repository.FormRepository)QuestionService{
+func NewQuestionService(Questionrepository repository.QuestionRepository,FormService FormService)QuestionService{
 	return &questionService{
 		QuestionRepository: Questionrepository,
-		FormRepository: FormRepository,
+		FormService: FormService,
 	}
 }
 
 
-func(s *questionService)CreateQuestion(question *models.Question,id int64,user_id int64)error{
-	existing,err:=s.FormRepository.GetFormByUserID(id,user_id)
+func(s *questionService)CreateQuestion(question *models.Question,FormID int64,user_id int64)error{
+	existing,err:=s.FormService.GetFormByUserID(FormID,user_id)
 	if err!=nil{
-		if errors.Is(err,gorm.ErrRecordNotFound){
-			return apperrors.ErrFormNotFound
-		}
 		return err
 	}
 	if existing ==nil{
 		return apperrors.ErrFormNotFound
 	}
 
-	question.FormID=id
+	question.FormID=existing.ID
 
-	err=s.QuestionRepository.CreateQuestion(question)
-	if err!=nil{
-		return err
-	}
-	return nil
+	return s.QuestionRepository.CreateQuestion(question)
 
 }
 
 
 func(s *questionService)GetAll(form_id int64,user_id int64)([]models.Question,error){
 
-	form,err:=s.FormRepository.GetFormByUserID(form_id,user_id)
+	form,err:=s.FormService.GetFormByUserID(form_id,user_id)
 	if err!=nil{
 		if errors.Is(err,gorm.ErrRecordNotFound){
 			return nil,apperrors.ErrFormNotFound
@@ -70,9 +63,13 @@ func(s *questionService)GetAll(form_id int64,user_id int64)([]models.Question,er
 	return questions,nil
 }
 
+func (s *questionService) GetQuestionsByFormID(formID int64) ([]models.Question, error) {
+    return s.QuestionRepository.GetAll(formID)
+}
+
 
 func(s *questionService)DeleteQuestion(id int64,form_id int64,user_id int64)error{
-	form,err:=s.FormRepository.GetFormByUserID(form_id,user_id)
+	form,err:=s.FormService.GetFormByUserID(form_id,user_id)
 
 	if err!=nil{
 		if errors.Is(err,gorm.ErrRecordNotFound){

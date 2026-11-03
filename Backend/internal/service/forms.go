@@ -10,24 +10,22 @@ import (
 )
 
 type formService struct {
-	FormRepository 		repository.FormRepository
-	QuestionRepository 	repository.QuestionRepository
+	FormRepository 			repository.FormRepository
 }
 
 type FormService interface{
 	CreateForm(form *models.Form,user_id int64)error
-	GetFormByID(id int64)(form *models.Form,questions []models.Question,err error)
-	GetAll()([]models.Form,error)
-	GetFormByUserID(id int64,user_id int64)(*models.Form,[]models.Question,error)
-	GetFormsByUserID(user_id int64)([]models.Form,error)
+	GetFormByID(id int64)(form *models.Form,err error)
+	GetAll(page int,limit int)([]models.Form,error)
+	GetFormByUserID(id int64,user_id int64)(*models.Form,error)
+	GetFormsByUserID(user_id int64,page int,limit int)([]models.Form,error)
 	DeleteFormByID(id int64,user_id int64)error
 	UpdateFormStatus(form_id int64,user_id int64,is_public bool)error
 }
 
-func NewFormService(FormRepository repository.FormRepository,QuestionRepository repository.QuestionRepository)FormService{
+func NewFormService(FormRepository repository.FormRepository)FormService{
 	return &formService{
 		FormRepository: FormRepository,
-		QuestionRepository: QuestionRepository,
 	}
 }
 
@@ -37,48 +35,41 @@ func(s *formService)CreateForm(form *models.Form,user_id int64)error{
 
 }
 
-func(s *formService)GetFormByID(id int64)(form *models.Form,questions []models.Question,err error){
+func(s *formService)GetFormByID(id int64)(form *models.Form,err error){
 	form,err=s.FormRepository.GetFormByID(id)
 	if err!=nil{
 		if errors.Is(err,gorm.ErrRecordNotFound){
-			return nil,nil,apperrors.ErrFormNotFound
+			return nil,apperrors.ErrFormNotFound
 		}
-		return nil,nil,err
+		return nil,err
 	}
 	if form.IsPublic==false{
-		return nil,nil,apperrors.ErrFormNotFound
+		return nil,apperrors.ErrFormNotFound
 	}
-	questions,err=s.QuestionRepository.GetAll(form.ID)
-	if err!=nil{
-		return nil,nil,err
-	}
-	return form,questions,nil
+	return form,nil
 }
 
 
-
-func(s *formService)GetAll()([]models.Form,error){
-	return s.FormRepository.GetAll()
+func(s *formService)GetAll(page int,limit int)([]models.Form,error){
+	return s.FormRepository.GetAll(page,limit)
 }
 
-func(s *formService)GetFormByUserID(id int64,user_id int64)(*models.Form,[]models.Question,error){
+
+func(s *formService)GetFormByUserID(id int64,user_id int64)(*models.Form,error){
 	form,err:=s.FormRepository.GetFormByUserID(id,user_id)
 	if err!=nil{
 		if errors.Is(err,gorm.ErrRecordNotFound){
-			return nil,nil,apperrors.ErrFormNotFound
+			return nil,apperrors.ErrFormNotFound
 		}
-		return nil,nil,err
+		return nil,err
 	}
-	questions,err:=s.QuestionRepository.GetAll(form.ID)
-	if err!=nil{
-		return nil,nil,err
-	}
-	return form,questions,nil
+
+	return form,nil
 }
 
 
-func(s *formService)GetFormsByUserID(user_id int64)([]models.Form,error){
-	return s.FormRepository.GetFormsByUserID(user_id)
+func(s *formService)GetFormsByUserID(user_id int64,page int,limit int)([]models.Form,error){
+	return s.FormRepository.GetFormsByUserID(user_id,page,limit)
 }
 
 
