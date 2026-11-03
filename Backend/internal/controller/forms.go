@@ -16,6 +16,7 @@ import (
 
 type formController struct {
 	FormService service.FormService
+	QuestionService service.QuestionService
 	tokenMaker  tokens.Maker
 }
 
@@ -23,12 +24,14 @@ type FormController interface{
 	RegisterRoutes(g *gin.RouterGroup)
 }
 
-func NewFormController(FormService service.FormService,tokenMaker tokens.Maker)FormController{
+func NewFormController(FormService service.FormService,QuestionService service.QuestionService,tokenMaker tokens.Maker)FormController{
 	return &formController{
 		FormService: FormService,
+		QuestionService: QuestionService,
 		tokenMaker: tokenMaker,
 	}
 }
+
 
 func(ctl *formController)RegisterRoutes(g *gin.RouterGroup){
 	g.POST("/forms",middleware.AuthMiddleware(ctl.tokenMaker),ctl.CreateForm)
@@ -77,7 +80,20 @@ func(ctl *formController)GetFormByID(g *gin.Context){
 	})
 	return
 	}
-	form,questions,err:=ctl.FormService.GetFormByID(id)
+	form,err:=ctl.FormService.GetFormByID(id)
+	if err!=nil{
+		if errors.Is(err,apperrors.ErrFormNotFound){
+			g.JSON(http.StatusNotFound,gin.H{"error":apperrors.ErrFormNotFound.Error(),
+		})
+		return
+		}
+		g.JSON(http.StatusInternalServerError,gin.H{"error":err.Error(),
+	})
+	return
+	}
+
+
+	questions,err:=ctl.QuestionService.GetQuestionsByFormID(form.ID)
 	if err!=nil{
 		if errors.Is(err,apperrors.ErrFormNotFound){
 			g.JSON(http.StatusNotFound,gin.H{"error":apperrors.ErrFormNotFound.Error(),
@@ -97,8 +113,20 @@ func(ctl *formController)GetFormByID(g *gin.Context){
 }
 
 func(ctl *formController)GetAll(g *gin.Context){
+
+	page, err := strconv.Atoi(g.DefaultQuery("page", "1"))
+	if err != nil || page < 1 {
+		g.JSON(http.StatusBadRequest, gin.H{"error": "invalid page"})
+		return
+	}
+
+	limit, err := strconv.Atoi(g.DefaultQuery("limit", "10"))
+	if err != nil || limit < 1 {
+		g.JSON(http.StatusBadRequest, gin.H{"error": "invalid limit"})
+		return
+	}
 	
-	forms,err:=ctl.FormService.GetAll()
+	forms,err:=ctl.FormService.GetAll(page,limit)
 	if err!=nil{
 		g.JSON(http.StatusInternalServerError,gin.H{"error":err.Error(),
 	})
@@ -126,7 +154,7 @@ func(ctl *formController)GetFormByUserID(g*gin.Context){
 
 	userID:=payload.UserID
 	
-	form,questions,err:=ctl.FormService.GetFormByUserID(id,userID)
+	form,err:=ctl.FormService.GetFormByUserID(id,userID)
 	if err!=nil{
 		if errors.Is(err,apperrors.ErrFormNotFound){
 			g.JSON(http.StatusNotFound,gin.H{"error":apperrors.ErrFormNotFound.Error(),
@@ -138,6 +166,7 @@ func(ctl *formController)GetFormByUserID(g*gin.Context){
 	return
 	}
 
+	questions,err:=ctl.QuestionService.GetQuestionsByFormID(form.ID)
 	response:=utils.NewOwnerFormResponse(form,questions)
 
 	g.JSON(http.StatusOK,gin.H{
@@ -148,6 +177,18 @@ func(ctl *formController)GetFormByUserID(g*gin.Context){
 
 func(ctl *formController)GetFormsByUserID(g *gin.Context){
 
+	page, err := strconv.Atoi(g.DefaultQuery("page", "1"))
+	if err != nil || page < 1 {
+		g.JSON(http.StatusBadRequest, gin.H{"error": "invalid page"})
+		return
+	}
+
+	limit, err := strconv.Atoi(g.DefaultQuery("limit", "10"))
+	if err != nil || limit < 1 {
+		g.JSON(http.StatusBadRequest, gin.H{"error": "invalid limit"})
+		return
+	}
+
 	payload,ok:=middleware.GetTokenPayload(g)
 	if !ok{
 		g.JSON(http.StatusUnauthorized,gin.H{"error":"unauthorized request"})
@@ -155,7 +196,7 @@ func(ctl *formController)GetFormsByUserID(g *gin.Context){
 	}
 	userID:=payload.UserID
 	
-	forms,err:=ctl.FormService.GetFormsByUserID(userID)
+	forms,err:=ctl.FormService.GetFormsByUserID(userID,page,limit)
 	if err!=nil{
 		g.JSON(http.StatusInternalServerError,gin.H{"error":err.Error(),
 	})

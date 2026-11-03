@@ -30,9 +30,11 @@ func(r *formRepository)GetFormByID(id int64)(*models.Form,error){
 	return &form,nil
 }
 
-func(r *formRepository)GetAll()([]models.Form,error){
+func(r *formRepository)GetAll(page int,limit int)([]models.Form,error){
 	var forms []models.Form
-	result:=r.db.Where("is_public",true).Find(&forms)
+	offset:=(page-1)*limit
+
+	result:=r.db.Where("is_public",true).Order("created_at DESC").Limit(limit).Offset(offset).Find(&forms)
 	if result.Error!=nil{
 		return nil,result.Error
 	}
@@ -51,10 +53,12 @@ func(r *formRepository)GetFormByUserID(id int64,user_id int64)(*models.Form,erro
 
 }
 
-func(r *formRepository)GetFormsByUserID(user_id int64)([]models.Form,error){
+func(r *formRepository)GetFormsByUserID(user_id int64,page int,limit int)([]models.Form,error){
 	var forms []models.Form
 
-	result:=r.db.Where("created_by=?",user_id).Find(&forms)
+	offset:=(page-1)*limit
+
+	result:=r.db.Where("created_by=?",user_id).Order("created_at DESC").Limit(limit).Offset(offset).Find(&forms)
 
 	if result.Error!=nil{
 		return nil,result.Error

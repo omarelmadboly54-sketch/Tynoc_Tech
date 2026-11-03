@@ -66,7 +66,7 @@ func(ctl *questionController)CreateQuestion(g *gin.Context){
 	err=ctl.QuestionService.CreateQuestion(&toquestion,form_id,userID)
 	if err!=nil{
 		if errors.Is(err,apperrors.ErrFormNotFound){
-			g.JSON(http.StatusBadRequest,gin.H{"error":apperrors.ErrFormNotFound.Error(),
+			g.JSON(http.StatusNotFound,gin.H{"error":apperrors.ErrFormNotFound.Error(),
 		})
 		return
 		}
@@ -141,6 +141,12 @@ func(ctl *questionController)DeleteQuestion(g *gin.Context){
 
 	err=ctl.QuestionService.DeleteQuestion(questionID,formID,userID)
 	if err!=nil{
+		if errors.Is(err,apperrors.ErrFormNotFound){
+			g.JSON(http.StatusNotFound,gin.H{"error":apperrors.ErrFormNotFound.Error(),
+		})
+		return
+		}
+		
 		if errors.Is(err,apperrors.ErrQuestionNotFound){
 			g.JSON(http.StatusNotFound,gin.H{"error":apperrors.ErrQuestionNotFound.Error(),
 		})

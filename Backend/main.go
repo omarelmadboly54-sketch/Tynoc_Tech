@@ -27,27 +27,41 @@ func main() {
 
 	r:=gin.Default()		
 
-	//users:
-	tokenDuration:=time.Duration(config.Access_Token_Minutes)*time.Minute
-	userRepository:=postgres.NewUserRepository(db)
-	userService:=service.NewUserService(userRepository,tokenMaker,tokenDuration)
-	userController:=controller.NewUserController(userService)
+	// Users
+	tokenDuration := time.Duration(config.Access_Token_Minutes) * time.Minute
+
+	userRepository := postgres.NewUserRepository(db)
+	userService := service.NewUserService(userRepository, tokenMaker, tokenDuration)
+	userController := controller.NewUserController(userService)
 	userController.RegisterRouter(r.Group("/api"))
-	
-	//questions repository:
-	questionRepository:=postgres.NewQuestionRepository(db)
 
-	//forms:
-	formRepository:=postgres.NewFormRepository(db)
-	formService:=service.NewFormService(formRepository,questionRepository)
-	formController:=controller.NewFormController(formService,tokenMaker)
-	formController.RegisterRoutes(r.Group("/api"))
+	// Forms
+	formRepository := postgres.NewFormRepository(db)
+	formService := service.NewFormService(formRepository)
 
-	//questions:
-	questionService:=service.NewQuestionService(questionRepository,formRepository)
-	questionController:=controller.NewQuestionController(questionService,tokenMaker)
+	// Questions
+	questionRepository := postgres.NewQuestionRepository(db)
+	questionService := service.NewQuestionService(questionRepository, formService)
+	questionController := controller.NewQuestionController(questionService, tokenMaker)
 	questionController.RegisterRutes(r.Group("/api"))
 
+	// Forms Controller
+	formController := controller.NewFormController(formService, questionService, tokenMaker)
+	formController.RegisterRoutes(r.Group("/api"))
+
+	// Submissions
+	submissionRepository := postgres.NewSubmissionRepository(db)
+	submissionService := service.NewSubmissionService(submissionRepository,formService,questionService)
+	submissionController := controller.NewSubmissionController(submissionService,tokenMaker)
+	submissionController.RegisterRoutes(r.Group("/api"))
+
+	//Analytics
+	analyticsRepository:=postgres.NewAnalyticsRepository(db)
+	analyticsService:=service.NewAnalyticsService(analyticsRepository,formService,questionService)
+	analyticsController:=controller.NewAnalyticsController(analyticsService,tokenMaker)
+	analyticsController.RegisterRoutes(r.Group("/api"))
+
+	
 	if err:=r.Run(config.ServerAddress);err!=nil{
 		log.Fatalf("Failed To Load Server:%v",err)
 	}
