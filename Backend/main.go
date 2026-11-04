@@ -9,6 +9,7 @@ import (
 	"tynoc_tech/Backend/internal/service"
 	"tynoc_tech/Backend/tokens"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -25,7 +26,17 @@ func main() {
 	}
 
 
-	r:=gin.Default()		
+	r:=gin.Default()
+	
+	r.Use(cors.New(cors.Config{
+    AllowOrigins: []string{config.FrontendURL},
+    AllowMethods: []string{
+        "GET", "POST", "PUT", "DELETE", "OPTIONS",
+    },
+    AllowHeaders: []string{
+        "Origin", "Content-Type", "Authorization",
+    },
+}))
 
 	// Users
 	tokenDuration := time.Duration(config.Access_Token_Minutes) * time.Minute
@@ -61,7 +72,8 @@ func main() {
 	analyticsController:=controller.NewAnalyticsController(analyticsService,tokenMaker)
 	analyticsController.RegisterRoutes(r.Group("/api"))
 
-	
+
+
 	if err:=r.Run(config.ServerAddress);err!=nil{
 		log.Fatalf("Failed To Load Server:%v",err)
 	}

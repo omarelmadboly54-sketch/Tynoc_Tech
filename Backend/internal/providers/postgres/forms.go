@@ -87,3 +87,26 @@ func(r *formRepository)UpdateFormStatus(form_id int64,user_id int64,is_public bo
 	
 }
 
+func(r *formRepository)SetPublicID(FormID int64,publicID string)error{
+	result:=r.db.Model(&models.Form{}).Where("id=?",FormID).Update("public_id",publicID)
+
+	if result.Error!=nil{
+		return result.Error
+	}
+	if result.RowsAffected==0{
+		return gorm.ErrRecordNotFound
+	}
+	return nil
+}
+
+func(r *formRepository)GetFormByPublicID(publicID string)(*models.Form,error){
+	var form models.Form
+
+	result:=r.db.Where("public_id=?",publicID).First(&form)
+	if result.Error!=nil{
+		return nil,result.Error
+	}
+	return &form,nil
+}
+
+
