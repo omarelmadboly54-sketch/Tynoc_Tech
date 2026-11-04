@@ -10,9 +10,9 @@ export function Badge({
   className?: string;
 }) {
   const variants = {
-    default: "bg-brand-100 text-brand-800",
-    success: "bg-mint-100 text-mint-700",
-    muted: "bg-navy-100 text-navy-400",
+    default: "bg-brand-100 text-brand-800 dark:bg-brand-900/50 dark:text-brand-200",
+    success: "bg-mint-100 text-mint-700 dark:bg-mint-900/40 dark:text-mint-300",
+    muted: "bg-navy-100 text-navy-400 dark:bg-navy-700 dark:text-navy-300",
   };
   return (
     <span

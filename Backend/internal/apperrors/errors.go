@@ -15,4 +15,5 @@ var (
     ErrInvalidAnswer      = errors.New("invalid answer")
 	//Questions:
 	ErrQuestionNotFound=errors.New("Question not found")
+	ErrInvalidPosition=errors.New("position must be sequential")
 )

@@ -3,37 +3,35 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
-import { Menu, X, MessageSquare } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/common/logo";
+import { ThemeToggle } from "@/components/common/theme-toggle";
 
 export function Navbar() {
   const { isAuthenticated, logout } = useAuth();
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur-lg border-b border-brand-100/60">
+    <header className="fixed top-0 inset-x-0 z-50 bg-white/90 dark:bg-navy-900/90 backdrop-blur-lg border-b border-brand-100/60 dark:border-navy-700">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-brand-sm group-hover:shadow-brand-md transition-shadow">
-            <MessageSquare size={18} className="text-white" />
-          </div>
-          <span className="font-semibold text-lg tracking-tight text-navy">Convoform</span>
-        </Link>
+        <Logo size="md" />
 
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-navy-400">
-          <Link href="/#features" className="hover:text-brand-600 transition-colors">
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-navy-400 dark:text-navy-300">
+          <Link href="/#features" className="hover:text-brand-600 dark:hover:text-brand-300 transition-colors">
             Features
           </Link>
-          <Link href="/#how" className="hover:text-brand-600 transition-colors">
+          <Link href="/#how" className="hover:text-brand-600 dark:hover:text-brand-300 transition-colors">
             How it works
           </Link>
-          <Link href="/forms" className="hover:text-brand-600 transition-colors">
+          <Link href="/forms" className="hover:text-brand-600 dark:hover:text-brand-300 transition-colors">
             Forms
           </Link>
         </nav>
 
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-2">
+          <ThemeToggle />
           {isAuthenticated ? (
             <>
               <Link href="/dashboard">
@@ -59,18 +57,21 @@ export function Navbar() {
           )}
         </div>
 
-        <button
-          className="md:hidden p-2 rounded-lg hover:bg-brand-50 text-navy"
-          onClick={() => setOpen(!open)}
-          aria-label="Menu"
-        >
-          {open ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        <div className="flex md:hidden items-center gap-1">
+          <ThemeToggle />
+          <button
+            className="p-2 rounded-lg hover:bg-brand-50 dark:hover:bg-navy-700 text-navy dark:text-navy-50"
+            onClick={() => setOpen(!open)}
+            aria-label="Menu"
+          >
+            {open ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </div>
 
       <div
         className={cn(
-          "md:hidden overflow-hidden transition-all border-t border-brand-100/60 bg-white",
+          "md:hidden overflow-hidden transition-all border-t border-brand-100/60 dark:border-navy-700 bg-white dark:bg-navy-900",
           open ? "max-h-80" : "max-h-0"
         )}
       >
@@ -78,25 +79,25 @@ export function Navbar() {
           <Link
             href="/#features"
             onClick={() => setOpen(false)}
-            className="py-2.5 px-2 text-navy-400 hover:text-brand-600 rounded-lg"
+            className="py-2.5 px-2 text-navy-400 dark:text-navy-300 hover:text-brand-600 rounded-lg"
           >
             Features
           </Link>
           <Link
             href="/#how"
             onClick={() => setOpen(false)}
-            className="py-2.5 px-2 text-navy-400 hover:text-brand-600 rounded-lg"
+            className="py-2.5 px-2 text-navy-400 dark:text-navy-300 hover:text-brand-600 rounded-lg"
           >
             How it works
           </Link>
           <Link
             href="/forms"
             onClick={() => setOpen(false)}
-            className="py-2.5 px-2 text-navy-400 hover:text-brand-600 rounded-lg"
+            className="py-2.5 px-2 text-navy-400 dark:text-navy-300 hover:text-brand-600 rounded-lg"
           >
             Forms
           </Link>
-          <div className="border-t border-brand-100 my-2" />
+          <div className="border-t border-brand-100 dark:border-navy-700 my-2" />
           {isAuthenticated ? (
             <>
               <Link href="/dashboard" onClick={() => setOpen(false)}>

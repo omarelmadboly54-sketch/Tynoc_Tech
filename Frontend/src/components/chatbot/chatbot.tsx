@@ -7,7 +7,8 @@ import { parseOptions } from "@/lib/utils";
 import { submissionsService } from "@/services/submissions.service";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MessageSquare, Send, CheckCircle2, ChevronRight } from "lucide-react";
+import { Send, CheckCircle2, ChevronRight } from "lucide-react";
+import { BotAvatar } from "./bot-avatar";
 import { cn } from "@/lib/utils";
 import { ApiError } from "@/services/api-client";
 
@@ -16,10 +17,8 @@ type Msg = { id: string; role: "bot" | "user"; content: string };
 function TypingIndicator() {
   return (
     <div className="flex gap-2.5 items-center message-enter">
-      <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center shrink-0">
-        <MessageSquare size={14} className="text-brand-600" />
-      </div>
-      <div className="flex gap-1 px-3.5 py-3 bg-white rounded-2xl rounded-tl-sm shadow-sm border border-brand-50">
+      <BotAvatar size={32} />
+      <div className="flex gap-1 px-3.5 py-3 bg-white dark:bg-navy-800 rounded-2xl rounded-tl-sm shadow-sm border border-brand-50 dark:border-navy-600">
         <span className="typing-dot w-1.5 h-1.5 rounded-full bg-brand-400" />
         <span className="typing-dot w-1.5 h-1.5 rounded-full bg-brand-400" />
         <span className="typing-dot w-1.5 h-1.5 rounded-full bg-brand-400" />
@@ -181,8 +180,8 @@ export function Chatbot({ form }: { form: FormResponse }) {
   if (!started) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center text-center px-4 py-16">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center mb-6 shadow-brand-md">
-          <MessageSquare size={28} className="text-white" />
+        <div className="mb-6">
+          <BotAvatar size={64} />
         </div>
         <h1 className="text-2xl font-bold text-navy">{form.title}</h1>
         <p className="mt-3 text-navy-400 max-w-sm leading-relaxed">
@@ -212,15 +211,13 @@ export function Chatbot({ form }: { form: FormResponse }) {
             )}
           >
             {msg.role === "bot" && (
-              <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center shrink-0 mt-0.5">
-                <MessageSquare size={14} className="text-brand-600" />
-              </div>
+              <BotAvatar size={32} className="mt-0.5" animate={false} />
             )}
             <div
               className={cn(
                 "max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
                 msg.role === "bot"
-                  ? "bg-white text-navy rounded-tl-sm shadow-sm border border-brand-50"
+                  ? "bg-white dark:bg-navy-800 text-navy dark:text-navy-50 rounded-tl-sm shadow-sm border border-brand-50 dark:border-navy-600"
                   : "bg-brand-500 text-white rounded-tr-sm"
               )}
             >

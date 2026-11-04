@@ -65,14 +65,19 @@ func(ctl *questionController)CreateQuestion(g *gin.Context){
 
 	err=ctl.QuestionService.CreateQuestion(&toquestion,form_id,userID)
 	if err!=nil{
-		if errors.Is(err,apperrors.ErrFormNotFound){
-			g.JSON(http.StatusNotFound,gin.H{"error":apperrors.ErrFormNotFound.Error(),
-		})
-		return
+		switch{
+		case errors.Is(err,apperrors.ErrFormNotFound):
+			g.JSON(http.StatusNotFound,gin.H{"error":apperrors.ErrFormNotFound.Error()})
+
+		case errors.Is(err,apperrors.ErrInvalidPosition):
+			g.JSON(http.StatusBadRequest,gin.H{"error":apperrors.ErrInvalidPosition.Error()})	
+
+		default:
+			g.JSON(http.StatusInternalServerError,gin.H{"error":err.Error(),
+			})	
+
 		}
-		g.JSON(http.StatusInternalServerError,gin.H{"error":err.Error(),
-	})
-	return
+		return
 	}
 
 	g.JSON(http.StatusCreated,gin.H{

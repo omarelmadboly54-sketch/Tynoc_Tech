@@ -115,8 +115,8 @@ func(s *formService)SetPublicID(FormID int64,userID int64)(string,error){
 		return "",err
 	}
 
-	if form.PublicID!=""{
-		return form.PublicID,nil
+	if form.PublicID!=nil{
+		return *form.PublicID,nil
 	}
 
 	randomBytes:=make([]byte,16)
@@ -143,8 +143,9 @@ func(s *formService)GetFormByPublicID(publicID string)(*models.Form,error){
 		return nil,err
 	}
 
-	if !form.IsPublic{
-		return nil,apperrors.ErrFormNotFound
-	}
+	if (form.PublicID == nil || *form.PublicID == "") && !form.IsPublic {
+        return nil, apperrors.ErrFormNotFound
+    }
+	
 	return form,nil
 }

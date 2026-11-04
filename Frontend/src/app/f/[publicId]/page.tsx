@@ -65,7 +65,7 @@ export default function PublicFormPage({
             </div>
             <span className="font-medium text-navy text-sm truncate">{form.title}</span>
           </div>
-          <span className="text-xs text-navy-300 shrink-0">Powered by Convoform</span>
+          <span className="text-xs text-navy-300 shrink-0">Powered by Formio</span>
         </div>
       </header>
       <Chatbot form={form} />

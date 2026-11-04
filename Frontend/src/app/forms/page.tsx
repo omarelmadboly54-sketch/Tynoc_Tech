@@ -37,14 +37,14 @@ export default function PublicFormsPage() {
     : forms;
 
   return (
-    <div className="min-h-screen bg-lavender/30">
+    <div className="min-h-screen bg-lavender/30 dark:bg-navy-900">
       <Navbar />
 
       <main className="pt-24 pb-16 px-4">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold text-navy">Explore Forms</h1>
-            <p className="mt-2 text-navy-400 max-w-md mx-auto">
+            <h1 className="text-3xl font-bold text-navy dark:text-navy-50">Explore Forms</h1>
+            <p className="mt-2 text-navy-400 dark:text-navy-300 max-w-md mx-auto">
               Browse published forms and start a conversation.
             </p>
           </div>
@@ -69,7 +69,7 @@ export default function PublicFormsPage() {
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div
                   key={i}
-                  className="bg-white rounded-2xl border border-brand-100 p-6 animate-pulse"
+                  className="bg-white dark:bg-navy-800 rounded-2xl border border-brand-100 dark:border-navy-700 p-6 animate-pulse"
                 >
                   <div className="w-10 h-10 rounded-xl bg-brand-100 mb-4" />
                   <div className="h-5 bg-brand-50 rounded w-3/4 mb-2" />
@@ -95,12 +95,12 @@ export default function PublicFormsPage() {
           )}
 
           {!loading && !error && filtered.length === 0 && (
-            <div className="bg-white rounded-2xl border border-brand-100 p-16 text-center">
+            <div className="bg-white dark:bg-navy-800 rounded-2xl border border-brand-100 dark:border-navy-700 p-16 text-center">
               <div className="w-14 h-14 rounded-2xl bg-brand-50 flex items-center justify-center mx-auto mb-4">
                 <Inbox size={24} className="text-brand-400" />
               </div>
-              <h3 className="font-semibold text-navy">No published forms yet</h3>
-              <p className="text-sm text-navy-400 mt-1 max-w-xs mx-auto">
+              <h3 className="font-semibold text-navy dark:text-navy-50">No published forms yet</h3>
+              <p className="text-sm text-navy-400 dark:text-navy-300 mt-1 max-w-xs mx-auto">
                 {search
                   ? "No forms match your search."
                   : "When forms are published, they'll appear here."}
@@ -115,7 +115,7 @@ export default function PublicFormsPage() {
                   <Link
                     key={form.id}
                     href={`/forms/${form.id}`}
-                    className="group bg-white rounded-2xl border border-brand-100 p-6 shadow-sm hover:shadow-brand-sm hover:border-brand-200 transition-all"
+                    className="group bg-white dark:bg-navy-800 rounded-2xl border border-brand-100 dark:border-navy-700 p-6 shadow-sm hover:shadow-brand-sm hover:border-brand-200 transition-all"
                   >
                     <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center mb-4 group-hover:bg-brand-100 transition-colors">
                       <MessageSquare size={18} className="text-brand-600" />
@@ -123,7 +123,7 @@ export default function PublicFormsPage() {
                     <h2 className="font-semibold text-navy group-hover:text-brand-700 transition-colors line-clamp-1">
                       {form.title}
                     </h2>
-                    <p className="mt-1.5 text-sm text-navy-400 line-clamp-2 leading-relaxed">
+                    <p className="mt-1.5 text-sm text-navy-400 dark:text-navy-300 line-clamp-2 leading-relaxed">
                       {form.description || "No description"}
                     </p>
                     <div className="mt-4 flex items-center text-brand-600 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
@@ -142,7 +142,7 @@ export default function PublicFormsPage() {
                 >
                   Previous
                 </Button>
-                <span className="text-sm text-navy-400 py-2">Page {page}</span>
+                <span className="text-sm text-navy-400 dark:text-navy-300 py-2">Page {page}</span>
                 <Button
                   variant="outline"
                   size="sm"

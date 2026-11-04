@@ -10,7 +10,7 @@ type Form struct {
 	CreatedBy   int64  		`gorm:"not null" json:"created_by"`
 	CreatedAt   time.Time	`gorm:"autoCreateTime" json:"-"`
 	UpdatedAt	time.Time	`gorm:"autoUpdateTime" json:"-"`
-	PublicID	string		`gorm:"unique" json:"public_id"`
+	PublicID	*string		`gorm:"unique" json:"public_id"`
 }
 
 

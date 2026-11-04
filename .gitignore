@@ -2,7 +2,7 @@
 Backend/app.env
 Frontend/.env
 Frontend/.env.local
-Frontend/.env.example
+
 
 # Go
 /backend/bin/
