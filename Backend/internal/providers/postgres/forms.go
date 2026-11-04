@@ -106,7 +106,9 @@ func(r *formRepository)GetFormByPublicID(publicID string)(*models.Form,error){
 	if result.Error!=nil{
 		return nil,result.Error
 	}
+
 	return &form,nil
 }
+
 
 

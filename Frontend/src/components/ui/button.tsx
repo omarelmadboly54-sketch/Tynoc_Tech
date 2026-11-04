@@ -17,8 +17,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         "bg-brand-500 text-white hover:bg-brand-600 shadow-brand-sm hover:shadow-brand-md focus-visible:ring-brand-500",
       secondary: "bg-navy text-white hover:bg-navy-600",
       outline:
-        "border-2 border-brand-200 bg-transparent text-navy hover:border-brand-500 hover:bg-brand-50 hover:text-brand-700",
-      ghost: "bg-transparent text-navy-400 hover:bg-brand-50 hover:text-brand-700",
+        "border-2 border-brand-200 dark:border-navy-600 bg-transparent text-navy dark:text-navy-50 hover:border-brand-500 hover:bg-brand-50 dark:hover:bg-navy-700 hover:text-brand-700 dark:hover:text-brand-300",
+      ghost: "bg-transparent text-navy-400 dark:text-navy-300 hover:bg-brand-50 dark:hover:bg-navy-700 hover:text-brand-700 dark:hover:text-brand-300",
       danger: "bg-red-600 text-white hover:bg-red-500",
       mint: "bg-mint text-navy hover:bg-mint-400 shadow-sm",
     };

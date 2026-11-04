@@ -14,10 +14,9 @@ import (
 )
 
 type userService struct {
-	UserRepository repository.UserRepository
-	tokenMaker     tokens.Maker
-	tokenDuration  time.Duration
-
+	UserRepository 			repository.UserRepository
+	tokenMaker     			tokens.Maker
+	tokenDuration  			time.Duration
 }
 
 type UserService interface{

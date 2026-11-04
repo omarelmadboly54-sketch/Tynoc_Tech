@@ -14,13 +14,16 @@ import {
   Check,
   Copy,
   Send,
+  MessageCircle,
+  Mail,
+  Facebook,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 /* ─── Animated Product Walkthrough ─── */
 const WALKTHROUGH_STEPS = [
-  { id: 1, label: "Open Convoform", desc: "Start creating" },
+  { id: 1, label: "Open Formio", desc: "Start creating" },
   { id: 2, label: "Create a form", desc: "Title & description" },
   { id: 3, label: "Add questions", desc: "Form builder" },
   { id: 4, label: "Reorder", desc: "Drag & drop" },
@@ -102,7 +105,7 @@ function ProductWalkthrough() {
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center mb-4 shadow-brand-md">
                   <MessageSquare size={28} className="text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-navy">Welcome to Convoform</h3>
+                <h3 className="text-xl font-bold text-navy">Welcome to Formio</h3>
                 <p className="text-sm text-navy-400 mt-2 max-w-xs">
                   Forms that feel like conversations. Create, share, and collect responses.
                 </p>
@@ -208,21 +211,31 @@ function ProductWalkthrough() {
                 </p>
                 <div className="flex items-center gap-2 p-3 rounded-xl border border-brand-200 bg-brand-50/50">
                   <span className="text-sm text-navy flex-1 truncate font-mono">
-                    convoform.app/f/abc123xy
+                    formio.app/f/abc123xy
                   </span>
                   <button className="shrink-0 p-2 rounded-lg bg-brand-500 text-white">
                     <Copy size={14} />
                   </button>
                 </div>
-                <div className="flex gap-2">
-                  {["WhatsApp", "Email", "Copy"].map((label) => (
-                    <span
-                      key={label}
-                      className="px-3 py-1.5 rounded-lg border border-brand-100 text-xs text-navy-400"
-                    >
-                      {label}
-                    </span>
-                  ))}
+                <div className="flex gap-3 items-center relative">
+                  <div className="w-11 h-11 rounded-full bg-[#25D366]/15 flex items-center justify-center border border-[#25D366]/30" title="WhatsApp">
+                    <MessageCircle size={20} className="text-[#25D366]" />
+                  </div>
+                  <div className="w-11 h-11 rounded-full bg-brand-50 flex items-center justify-center border border-brand-100" title="SMS">
+                    <Send size={18} className="text-brand-600" />
+                  </div>
+                  <div className="w-11 h-11 rounded-full bg-blue-50 flex items-center justify-center border border-blue-100" title="Email">
+                    <Mail size={18} className="text-blue-600" />
+                  </div>
+                  <div className="w-11 h-11 rounded-full bg-blue-50 flex items-center justify-center border border-blue-100" title="Facebook">
+                    <Facebook size={18} className="text-blue-700" />
+                  </div>
+                  <div className="absolute -right-1 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <div className="w-5 h-5 rounded-full border-2 border-navy bg-white shadow animate-pulse" style={{marginLeft: '-28px', marginTop: '-8px'}} />
+                  </div>
+                </div>
+                <div className="mt-2 p-3 rounded-xl bg-[#25D366]/10 border border-[#25D366]/20 text-xs text-navy">
+                  <span className="font-medium text-[#128C7E]">WhatsApp ·</span> Hey! Fill out this form: formio.app/f/abc123xy
                 </div>
               </div>
             )}
@@ -307,7 +320,7 @@ function ProductWalkthrough() {
 
 /* ─── Interactive Chatbot Demo ─── */
 const DEMO_FLOW = [
-  { role: "bot" as const, text: "Hey there! 👋 Welcome to Convoform. Ready to see how forms can become conversations?" },
+  { role: "bot" as const, text: "Hey there! 👋 Welcome to Formio. Ready to see how forms can become conversations?" },
   { role: "bot" as const, text: "What's your first name?" },
   { role: "user" as const, text: "Sam" },
   { role: "bot" as const, text: "Nice to meet you, Sam! How did you hear about us?" },
@@ -356,7 +369,7 @@ function ChatbotDemo() {
         ...m,
         {
           role: "bot",
-          text: "Thanks! That's exactly how Convoform works — one question at a time, like a real conversation.",
+          text: "Thanks! That's exactly how Formio works — one question at a time, like a real conversation.",
         },
       ]);
     }, 1000);
@@ -383,7 +396,7 @@ function ChatbotDemo() {
           <MessageSquare size={16} className="text-white" />
         </div>
         <div>
-          <div className="text-white text-sm font-medium">Convoform Demo</div>
+          <div className="text-white text-sm font-medium">Formio Demo</div>
           <div className="text-white/70 text-[11px]">Interactive preview</div>
         </div>
       </div>
@@ -571,7 +584,7 @@ export default function LandingPage() {
           <div className="text-center mb-14">
             <h2 className="text-3xl font-bold text-navy">How it works</h2>
             <p className="mt-2 text-navy-400">
-              A quick walkthrough of the Convoform experience.
+              A quick walkthrough of the Formio experience.
             </p>
           </div>
           <ProductWalkthrough />
@@ -606,7 +619,7 @@ export default function LandingPage() {
               <MessageSquare size={16} className="text-white" />
             </div>
             <div>
-              <span className="font-semibold text-navy">Convoform</span>
+              <span className="font-semibold text-navy">Formio</span>
               <p className="text-xs text-navy-300">Forms that feel like conversations.</p>
             </div>
           </div>
@@ -629,7 +642,7 @@ export default function LandingPage() {
           </nav>
         </div>
         <div className="max-w-5xl mx-auto mt-8 pt-6 border-t border-brand-50 text-center text-xs text-navy-300">
-          © {new Date().getFullYear()} Convoform. All rights reserved.
+          © {new Date().getFullYear()} Formio. All rights reserved.
         </div>
       </footer>
     </div>

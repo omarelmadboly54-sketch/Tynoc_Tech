@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"errors"
 	"tynoc_tech/Backend/internal/models"
 	"tynoc_tech/Backend/internal/repository"
 
@@ -22,6 +23,8 @@ func(r *questionRepository)CreateQuestion(question *models.Question)error{
 	return r.db.Create(question).Error
 }
 
+
+
 func(r *questionRepository)GetAll(form_id int64)([]models.Question,error){
 	var questions []models.Question
 
@@ -34,16 +37,37 @@ func(r *questionRepository)GetAll(form_id int64)([]models.Question,error){
 
 }
 
+func (r *questionRepository) CountQuestionsByFormID(formID int64) (int64, error) {
+    var count int64
+    err := r.db.Model(&models.Question{}).Where("form_id = ?", formID).Count(&count).Error
+    return count, err
+}
 
-func(r *questionRepository)DeleteQuestion(id int64,form_id int64)error{
-	result:= r.db.Where("id=? AND form_id=?",id,form_id).Delete(&models.Question{})
-	if result.Error!=nil{
-		return result.Error
-	}
 
-	if result.RowsAffected==0{
-		return gorm.ErrRecordNotFound
-	}
-	return nil
+func (r *questionRepository) DeleteQuestion(id int64, form_id int64) error {
+    return r.db.Transaction(func(tx *gorm.DB) error {
+    
+        var question models.Question
+        if err := tx.Where("id = ? AND form_id = ?", id, form_id).First(&question).Error; err != nil {
+            if errors.Is(err, gorm.ErrRecordNotFound) {
+                return gorm.ErrRecordNotFound
+            }
+            return err
+        }
+
+        
+        if err := tx.Delete(&question).Error; err != nil {
+            return err
+        }
+
+        
+        if err := tx.Model(&models.Question{}).
+            Where("form_id = ? AND position > ?", form_id, question.Position).
+            Update("position", gorm.Expr("position - 1")).Error; err != nil {
+            return err
+        }
+
+        return nil
+    })
 }
 

@@ -56,23 +56,26 @@ func(r *submissionRepository)GetSubmissionsByFormID(FormID int64,page int,limit 
 	offset := (page - 1) * limit
 
 	subquery := r.db.Table("submissions").
-		Select("id, created_at").
-		Where("form_id = ?", FormID).
-		Order("created_at DESC").
-		Limit(limit).
-		Offset(offset)
+        Select("submissions.id, submissions.created_at").
+        Joins("JOIN answers ON answers.submission_id = submissions.id").
+        Where("submissions.form_id = ?", FormID).
+        Group("submissions.id, submissions.created_at"). 
+        Order("submissions.created_at DESC").
+        Limit(limit).
+        Offset(offset)
 
-	err := r.db.Table("(?) AS paginated_submissions", subquery).
-		Select(`
-			paginated_submissions.id AS submission_id,
-			paginated_submissions.created_at,
-			answers.id AS answer_id,
-			answers.question_id,
-			answers.answer
-		`).
-		Joins("LEFT JOIN answers ON answers.submission_id = paginated_submissions.id").
-		Order("paginated_submissions.created_at DESC").
-		Scan(&rows).Error
+    
+    err := r.db.Table("(?) AS paginated_submissions", subquery).
+        Select(`
+            paginated_submissions.id AS submission_id,
+            paginated_submissions.created_at,
+            answers.id AS answer_id,
+            answers.question_id,
+            answers.answer
+        `).
+        Joins("LEFT JOIN answers ON answers.submission_id = paginated_submissions.id").
+        Order("paginated_submissions.created_at DESC").
+        Scan(&rows).Error
 
 	if err != nil {
 		return nil, err

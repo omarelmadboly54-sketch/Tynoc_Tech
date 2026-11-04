@@ -71,11 +71,11 @@ export function ShareModal({ open, onClose, publicUrl, formTitle }: ShareModalPr
     >
       <div className="absolute inset-0 bg-navy/40 backdrop-blur-sm" />
 
-      <div className="relative w-full max-w-md bg-white rounded-2xl shadow-brand-lg border border-brand-100 modal-content">
+      <div className="relative w-full max-w-md bg-white dark:bg-navy-800 rounded-2xl shadow-brand-lg border border-brand-100 dark:border-navy-600 modal-content">
         <div className="flex items-start justify-between p-5 pb-0">
           <div>
-            <h2 className="text-lg font-semibold text-navy">Share your form</h2>
-            <p className="text-sm text-navy-400 mt-1">
+            <h2 className="text-lg font-semibold text-navy dark:text-navy-50">Share your form</h2>
+            <p className="text-sm text-navy-400 dark:text-navy-300 mt-1">
               Your form is ready! Share it with your audience and start collecting responses.
             </p>
           </div>
@@ -122,7 +122,7 @@ export function ShareModal({ open, onClose, publicUrl, formTitle }: ShareModalPr
               rel="noopener noreferrer"
               className={cn(
                 "flex flex-col items-center gap-2 p-3 rounded-xl border border-brand-100",
-                "hover:bg-brand-50 hover:border-brand-200 transition-colors text-navy-400 hover:text-navy"
+                "hover:bg-brand-50 hover:border-brand-200 transition-colors text-navy-400 dark:text-navy-300 hover:text-navy dark:text-navy-50"
               )}
             >
               <MessageCircle size={22} className="text-green-500" />
@@ -134,7 +134,7 @@ export function ShareModal({ open, onClose, publicUrl, formTitle }: ShareModalPr
               rel="noopener noreferrer"
               className={cn(
                 "flex flex-col items-center gap-2 p-3 rounded-xl border border-brand-100",
-                "hover:bg-brand-50 hover:border-brand-200 transition-colors text-navy-400 hover:text-navy"
+                "hover:bg-brand-50 hover:border-brand-200 transition-colors text-navy-400 dark:text-navy-300 hover:text-navy dark:text-navy-50"
               )}
             >
               <Facebook size={22} className="text-blue-600" />
@@ -144,7 +144,7 @@ export function ShareModal({ open, onClose, publicUrl, formTitle }: ShareModalPr
               href={emailUrl}
               className={cn(
                 "flex flex-col items-center gap-2 p-3 rounded-xl border border-brand-100",
-                "hover:bg-brand-50 hover:border-brand-200 transition-colors text-navy-400 hover:text-navy"
+                "hover:bg-brand-50 hover:border-brand-200 transition-colors text-navy-400 dark:text-navy-300 hover:text-navy dark:text-navy-50"
               )}
             >
               <Mail size={22} className="text-brand-500" />

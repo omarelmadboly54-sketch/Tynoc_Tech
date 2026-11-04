@@ -40,6 +40,16 @@ func(s *questionService)CreateQuestion(question *models.Question,FormID int64,us
 
 	question.FormID=existing.ID
 
+	count, err := s.QuestionRepository.CountQuestionsByFormID(question.FormID)
+    if err != nil {
+        return err
+    }
+
+    expectedPosition := int(count) + 1
+    if question.Position != expectedPosition {
+        return apperrors.ErrInvalidPosition 
+    }
+
 	return s.QuestionRepository.CreateQuestion(question)
 
 }
@@ -88,4 +98,5 @@ func(s *questionService)DeleteQuestion(id int64,form_id int64,user_id int64)erro
 
 	return nil
 }
+
 

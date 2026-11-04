@@ -31,7 +31,7 @@ func main() {
 	r.Use(cors.New(cors.Config{
     AllowOrigins: []string{config.FrontendURL},
     AllowMethods: []string{
-        "GET", "POST", "PUT", "DELETE", "OPTIONS",
+        "GET", "POST", "PUT", "PATCH","DELETE", "OPTIONS",
     },
     AllowHeaders: []string{
         "Origin", "Content-Type", "Authorization",

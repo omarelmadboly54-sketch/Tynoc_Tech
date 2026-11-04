@@ -114,6 +114,8 @@ func ValidateAnswer(question models.Question, answer string) error {
     }
 }
 
+
+
 func BuildBreakdown(options []string,counts map[string]int64) []models.AnswerStatistic {
 
     var total int64
