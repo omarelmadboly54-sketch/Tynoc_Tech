@@ -6,5 +6,6 @@ type Configuration struct{
 	DBSource				string			`mapstructure:"DB_SOURCE"`
 	ServerAddress			string			`mapstructure:"SERVER_ADDRESS"`
 	SecretKey				string			`mapstructure:"SECRET_KEY"`
-	Access_Token_Minutes	int				`mapstructure:"ACCESS_TOKEN_MINUTES"`			
+	Access_Token_Minutes	int				`mapstructure:"ACCESS_TOKEN_MINUTES"`
+	FrontendURL				string			`mapstructure:"FRONTEND_URL"`			
 }

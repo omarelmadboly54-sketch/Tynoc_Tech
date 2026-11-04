@@ -1,6 +1,8 @@
 package service
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"errors"
 	"tynoc_tech/Backend/internal/apperrors"
 	"tynoc_tech/Backend/internal/models"
@@ -21,6 +23,8 @@ type FormService interface{
 	GetFormsByUserID(user_id int64,page int,limit int)([]models.Form,error)
 	DeleteFormByID(id int64,user_id int64)error
 	UpdateFormStatus(form_id int64,user_id int64,is_public bool)error
+	SetPublicID(FormID int64,userID int64)(string,error)
+	GetFormByPublicID(publicID string)(*models.Form,error)
 }
 
 func NewFormService(FormRepository repository.FormRepository)FormService{
@@ -100,4 +104,47 @@ func(s *formService)UpdateFormStatus(form_id int64,user_id int64,is_public bool)
 	}
 
 	return nil
+}
+
+func(s *formService)SetPublicID(FormID int64,userID int64)(string,error){
+	form,err:=s.FormRepository.GetFormByUserID(FormID,userID)
+	if err!=nil{
+		if errors.Is(err,gorm.ErrRecordNotFound){
+			return "",apperrors.ErrFormNotFound
+		}
+		return "",err
+	}
+
+	if form.PublicID!=""{
+		return form.PublicID,nil
+	}
+
+	randomBytes:=make([]byte,16)
+
+	if _,err:=rand.Read(randomBytes);err!=nil{
+		return "",err
+	}
+
+	publicID:=hex.EncodeToString(randomBytes)
+
+	if err:=s.FormRepository.SetPublicID(FormID,publicID);err!=nil{
+		return "",err
+	}
+	return publicID,nil
+}
+
+
+func(s *formService)GetFormByPublicID(publicID string)(*models.Form,error){
+	form,err:=s.FormRepository.GetFormByPublicID(publicID)
+	if err!=nil{
+		if errors.Is(err,gorm.ErrRecordNotFound){
+			return nil,apperrors.ErrFormNotFound
+		}
+		return nil,err
+	}
+
+	if !form.IsPublic{
+		return nil,apperrors.ErrFormNotFound
+	}
+	return form,nil
 }

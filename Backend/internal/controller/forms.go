@@ -41,6 +41,8 @@ func(ctl *formController)RegisterRoutes(g *gin.RouterGroup){
 	g.PATCH("/forms/:id",middleware.AuthMiddleware(ctl.tokenMaker),ctl.UpdateFormStatus)
 	g.GET("/forms/:id",ctl.GetFormByID)
 	g.GET("/forms",ctl.GetAll)
+	g.GET("/forms/public/:public_id",ctl.GetFormByPublicID)
+	g.POST("/forms/:id/public-link",middleware.AuthMiddleware(ctl.tokenMaker),ctl.SetPublicID)
 
 }
 
@@ -70,6 +72,9 @@ func(ctl *formController)CreateForm(g *gin.Context){
 	}
 	g.JSON(http.StatusCreated,gin.H{
 		"ok":"ok",
+		"data":gin.H{
+			"id":toForm.ID,
+		},
 	})
 }
 
@@ -279,3 +284,70 @@ func(ctl *formController)UpdateFormStatus(g *gin.Context){
 	})
 }
 
+func(ctl *formController)GetFormByPublicID(g *gin.Context){
+	publicID:=g.Param("public_id")
+	
+	if publicID==""{
+		g.JSON(http.StatusBadRequest,gin.H{"error":"Public ID is Required"})
+		return
+	}
+
+	form,err:=ctl.FormService.GetFormByPublicID(publicID)
+	if err!=nil{
+		if errors.Is(err,apperrors.ErrFormNotFound){
+			g.JSON(http.StatusNotFound,gin.H{"error":apperrors.ErrFormNotFound.Error(),
+		})
+		return
+		}
+		g.JSON(http.StatusInternalServerError,gin.H{"error":err.Error(),
+	})
+	return
+	}
+
+	questions,err:=ctl.QuestionService.GetQuestionsByFormID(form.ID)
+	if err!=nil{
+		g.JSON(http.StatusInternalServerError,gin.H{"error":err.Error(),
+	})
+	return
+	}
+
+	response:=utils.NewFormResponse(form,questions)
+
+	g.JSON(http.StatusOK,gin.H{
+		"form":response,
+	})
+	
+}
+
+func(ctl *formController)SetPublicID(g *gin.Context){
+
+	form_id,err:=strconv.ParseInt(g.Param("id"),10,64)
+	if err!=nil{
+		g.JSON(http.StatusBadRequest,gin.H{"error":err.Error(),
+	})
+	return
+	}
+
+	payload,ok:=middleware.GetTokenPayload(g)
+	if ! ok{
+		g.JSON(http.StatusUnauthorized,gin.H{"error":"unauthorized request"})
+		return
+	}
+	userID:=payload.UserID
+
+	publicID,err:=ctl.FormService.SetPublicID(form_id,userID)
+	if err!=nil{
+		if errors.Is(err,apperrors.ErrFormNotFound){
+			g.JSON(http.StatusNotFound,gin.H{"error":apperrors.ErrFormNotFound.Error(),
+		})
+		return
+		}
+		g.JSON(http.StatusInternalServerError,gin.H{"error":err.Error(),
+	})
+	return
+	}
+
+	g.JSON(http.StatusCreated,gin.H{
+		"public_id":publicID,
+	})
+}

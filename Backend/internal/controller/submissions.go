@@ -74,7 +74,8 @@ func(ctl *submissionController)CreateSubmission(g *gin.Context){
             "error": "Internal server error",
         })
     }
-}
+	return
+	}
 
 	g.JSON(http.StatusCreated,gin.H{
 		"message":"Submission created successfully",
